@@ -1,84 +1,169 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
-from jinja2 import Environment
+from flask import Flask, request, render_template_string
 
-router = APIRouter()
 
-@router.get("/post.html", response_class=HTMLResponse)
-async def get_post_detail(request: Request, id: str = "1"):
-    """
-    양동적임 ㄹㅇ ㅋㅋㅋㅋ AI 모델 분석 리포트 페이지 뼈대 잡아봤어. 
-    네가 나중에 CSS 더 만져주면 진짜 지릴 듯 ㅋㅋㅋ
-    """
-    
-    # 간지 끝판왕 예상 ㅋㅋㅋㅋ
+
+app = Flask(__name__)
+
+
+
+@app.route('/post.html')
+
+def post_detail():
+
+    post_id = request.args.get('id', '1')
+
+
+
+  
+
     template_content = f"""
+
     <!DOCTYPE html>
+
     <html lang="ko">
+
     <head>
+
         <meta charset="UTF-8">
-        <title>Prizux AI | Insight Report #{id}</title>
+
+        <title>Prizux AI | Future Insight #{post_id}</title>
+
         <style>
+
             @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+KR:wght@300;500&display=swap');
+
+            
+
             body {{ 
-                background-color: #050505; color: #e0e0e0; 
-                font-family: 'Noto Sans KR', sans-serif; margin: 0; padding: 0;
-                overflow: hidden;
+
+                margin: 0; padding: 0; background-color: #000;
+
+                display: flex; justify-content: center; align-items: center; height: 100vh;
+
+                overflow: hidden; color: #fff; font-family: 'Noto Sans KR', sans-serif;
+
             }}
-            .container {{
-                height: 100vh; display: flex; flex-direction: column;
-                justify-content: center; align-items: center;
-                background: radial-gradient(circle at center, #111 0%, #000 100%);
+
+
+
+            
+
+            .beams-container {{
+
+                width: 1080px; height: 1080px; position: absolute;
+
+                top: 50%; left: 50%; transform: translate(-50%, -50%);
+
+                z-index: 1; pointer-events: none;
+
+                opacity: 0.6; 
+
             }}
+
+
+
             .glass-card {{
-                background: rgba(255, 255, 255, 0.03);
-                border: 1px solid rgba(0, 255, 170, 0.2);
-                padding: 40px; border-radius: 20px;
-                backdrop-filter: blur(10px); box-shadow: 0 0 40px rgba(0, 255, 170, 0.1);
-                text-align: center; max-width: 600px;
+
+                position: relative; z-index: 2; /* 빔 위로 올라오게 */
+
+                background: rgba(0, 0, 0, 0.6);
+
+                border: 1px solid rgba(255, 255, 255, 0.1);
+
+                padding: 50px; border-radius: 30px;
+
+                backdrop-filter: blur(20px);
+
+                box-shadow: 0 0 60px rgba(255, 255, 255, 0.05);
+
+                text-align: center; max-width: 550px;
+
             }}
+
+
+
             h1 {{ 
-                font-family: 'Orbitron', sans-serif; color: #00ffaa; 
-                letter-spacing: 5px; margin-bottom: 10px;
-                text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+
+                font-family: 'Orbitron', sans-serif; color: #fff; 
+
+                letter-spacing: 8px; margin-bottom: 5px;
+
+                text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+
             }}
+
+
+
             .id-badge {{
-                background: #00ffaa; color: #000; padding: 2px 12px;
-                font-weight: bold; border-radius: 5px; font-size: 0.8rem;
+
+                background: #fff; color: #000; padding: 3px 15px;
+
+                font-weight: bold; border-radius: 4px; font-size: 0.75rem; 
+
+                display: inline-block; margin-bottom: 20px;
+
             }}
+
+
+
             .quote {{
-                font-style: italic; color: #888; margin-top: 30px;
-                line-height: 1.6; border-left: 3px solid #00ffaa; padding-left: 15px;
+
+                font-size: 1.1rem; color: #ccc; margin-top: 35px;
+
+                line-height: 1.8; border-left: 2px solid #fff; padding-left: 20px; text-align: left;
+
             }}
-            .footer {{
-                margin-top: 40px; font-size: 0.7rem; color: #444; text-transform: uppercase;
-            }}
+
+
+
+            strong {{ color: #fff; text-shadow: 0 0 5px #fff; }}
+
         </style>
+
     </head>
+
     <body>
-        <div class="container">
-            <div class="glass-card">
-                <div class="id-badge">REPORT DATA #{id}</div>
-                <h1>PRIZUX DEEPCORE</h1>
-                <p style="font-size: 1.2rem; font-weight: 300;">
-                    Numerical Intelligence Model v4.2 Analysis
-                </p>
-                
-                <div class="quote">
-                    "Prizux AI를 사용하는 순간, 당신은 단순한 그래프를 보는 것이 아닙니다.<br>
-                    <strong>데이터의 파편 너머에 숨겨진 '미래'를 보게 됩니다.</strong>"
-                </div>
 
-                <div class="footer">
-                    Neural Synapse Synchronized | Connection Stable | UID: {id}
-                </div>
-            </div>
+        <div class="beams-container">
+
+            <div style="width:100%; height:100%; border:1px dashed rgba(255,255,255,0.1); transform: rotate(30deg);"></div>
+
         </div>
-    </body>
-    </html>
-    """
- 
-    env = Environment()
-    template = env.from_string(template_content)
 
-    return template.render()
+
+
+        <div class="glass-card">
+
+            <div class="id-badge">NEURAL LINK #{post_id}</div>
+
+            <h1>PRIZUX</h1>
+
+            <p style="letter-spacing: 3px; color: #666; font-size: 0.9rem;">FUTURE ANALYSIS ENGINE</p>
+
+            
+
+            <div class="quote">
+
+                "Prizux AI를 사용하는 순간,<br>당신은 단순한 그래프를 보는 것이 아닙니다.<br>
+
+                <strong>데이터의 파편 너머에 숨겨진 '미래'를 보게 됩니다.</strong>"
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    """
+
+
+
+    return render_template_string(template_content)
+
+
+
+if __name__ == '__main__':
+
+    app.run(host='0.0.0.0', port=8080)
