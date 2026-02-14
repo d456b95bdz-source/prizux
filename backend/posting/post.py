@@ -1,20 +1,18 @@
-from flask import Flask, request, render_template_string
+from fastapi import APIRouter, Request, Query
+
+from fastapi.responses import HTMLResponse
+
+from jinja2 import Environment
 
 
 
-app = Flask(__name__)
+router = APIRouter()
 
 
 
-@app.route('/post.html')
+@router.get("/post", response_class=HTMLResponse)
 
-def post_detail():
-
-    post_id = request.args.get('id', '1')
-
-
-
-  
+async def get_post_detail(request: Request, id: str = Query("1")):
 
     template_content = f"""
 
@@ -26,7 +24,7 @@ def post_detail():
 
         <meta charset="UTF-8">
 
-        <title>Prizux AI | Future Insight #{post_id}</title>
+        <title>Prizux AI | Future Insight #{id}</title>
 
         <style>
 
@@ -46,17 +44,51 @@ def post_detail():
 
 
 
-            
-
             .beams-container {{
 
                 width: 1080px; height: 1080px; position: absolute;
 
-                top: 50%; left: 50%; transform: translate(-50%, -50%);
+                top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(30deg);
 
                 z-index: 1; pointer-events: none;
 
-                opacity: 0.6; 
+            }}
+
+
+
+            .beam {{
+
+                position: absolute; width: 2px; height: 300px;
+
+                background: linear-gradient(to bottom, transparent, #ffffff, transparent);
+
+                opacity: 0;
+
+                animation: flow 4s infinite linear;
+
+            }}
+
+
+
+    
+
+            .beam:nth-child(1) {{ left: 20%; animation-delay: 0s; }}
+
+            .beam:nth-child(2) {{ left: 40%; animation-delay: 1.5s; }}
+
+            .beam:nth-child(3) {{ left: 60%; animation-delay: 0.8s; }}
+
+            .beam:nth-child(4) {{ left: 80%; animation-delay: 2.2s; }}
+
+
+
+            @keyframes flow {{
+
+                0% {{ transform: translateY(-1000px); opacity: 0; }}
+
+                50% {{ opacity: 0.5; }}
+
+                100% {{ transform: translateY(1000px); opacity: 0; }}
 
             }}
 
@@ -64,9 +96,9 @@ def post_detail():
 
             .glass-card {{
 
-                position: relative; z-index: 2; /* 빔 위로 올라오게 */
+                position: relative; z-index: 2;
 
-                background: rgba(0, 0, 0, 0.6);
+                background: rgba(0, 0, 0, 0.7);
 
                 border: 1px solid rgba(255, 255, 255, 0.1);
 
@@ -86,9 +118,7 @@ def post_detail():
 
                 font-family: 'Orbitron', sans-serif; color: #fff; 
 
-                letter-spacing: 8px; margin-bottom: 5px;
-
-                text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+                letter-spacing: 8px; text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
 
             }}
 
@@ -104,20 +134,6 @@ def post_detail():
 
             }}
 
-
-
-            .quote {{
-
-                font-size: 1.1rem; color: #ccc; margin-top: 35px;
-
-                line-height: 1.8; border-left: 2px solid #fff; padding-left: 20px; text-align: left;
-
-            }}
-
-
-
-            strong {{ color: #fff; text-shadow: 0 0 5px #fff; }}
-
         </style>
 
     </head>
@@ -126,7 +142,15 @@ def post_detail():
 
         <div class="beams-container">
 
-            <div style="width:100%; height:100%; border:1px dashed rgba(255,255,255,0.1); transform: rotate(30deg);"></div>
+            <div class="beam"></div>
+
+            <div class="beam"></div>
+
+            <div class="beam"></div>
+
+            <div class="beam"></div>
+
+            <div style="width:100%; height:100%; border:1px solid rgba(255,255,255,0.05);"></div>
 
         </div>
 
@@ -134,15 +158,11 @@ def post_detail():
 
         <div class="glass-card">
 
-            <div class="id-badge">NEURAL LINK #{post_id}</div>
+            <div class="id-badge">NEURAL LINK #{id}</div>
 
             <h1>PRIZUX</h1>
 
-            <p style="letter-spacing: 3px; color: #666; font-size: 0.9rem;">FUTURE ANALYSIS ENGINE</p>
-
-            
-
-            <div class="quote">
+            <div class="quote" style="font-size: 1.1rem; color: #ccc; border-left: 2px solid #fff; padding-left: 20px; text-align: left; margin-top: 20px;">
 
                 "Prizux AI를 사용하는 순간,<br>당신은 단순한 그래프를 보는 것이 아닙니다.<br>
 
@@ -158,12 +178,8 @@ def post_detail():
 
     """
 
+    env = Environment()
 
+    template = env.from_string(template_content)
 
-    return render_template_string(template_content)
-
-
-
-if __name__ == '__main__':
-
-    app.run(host='0.0.0.0', port=8080)
+    return template.render()
