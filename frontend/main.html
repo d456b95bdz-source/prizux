@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prizux | 미래를 설계하는 플랫폼</title>
+
+  <style>
+    :root{
+      --bg: #07080b;
+      --bg-soft: #0e1117;
+      --card: rgba(255,255,255,0.06);
+      --line: rgba(255,255,255,0.14);
+      --text: #f5f7fb;
+      --muted: #b9c0cf;
+      --primary: #8ab4ff;
+      --primary-strong: #66a3ff;
+      --success: #9df2b8;
+      --danger: #ff8f8f;
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --shadow-xl: 0 30px 80px rgba(0,0,0,.45);
+      --shadow-lg: 0 18px 38px rgba(0,0,0,.35);
+      --nav-h: 74px;
+      --max: 1200px;
+    }
+
+    *{ box-sizing: border-box; }
+    html, body{
+      margin:0; padding:0;
+      background: var(--bg);
+      color: var(--text);
+      font-family:
+        -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+        "Noto Sans KR", "Pretendard", "Segoe UI", Roboto, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    /* ===== background animated orbs ===== */
+    body::before, body::after{
+      content:"";
+      position: fixed;
+      inset: auto;
+      width: 42vw; height: 42vw;
+      border-radius: 50%;
+      z-index: -3;
+      filter: blur(60px);
+      opacity: .26;
+      pointer-events: none;
+      animation: floatOrb 18s ease-in-out infinite alternate;
+    }
+    body::before{
+      background: radial-gradient(circle at 30% 30%, #6aa7ff, #1b3d73 55%, transparent 70%);
+      top: -8vw; left: -10vw;
+    }
+    body::after{
+      background: radial-gradient(circle at 70% 70%, #8e7bff, #2c2463 55%, transparent 70%);
+      right: -12vw; bottom: -12vw;
+      animation-duration: 22s;
+    }
+    @keyframes floatOrb{
+      0% { transform: translate3d(0,0,0) scale(1); }
+      50% { transform: translate3d(20px,-18px,0) scale(1.08); }
+      100% { transform: translate3d(-14px,24px,0) scale(0.95); }
+    }
+
+    /* ===== top nav ===== */
+    .nav{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: var(--nav-h);
+      backdrop-filter: saturate(140%) blur(14px);
+      -webkit-backdrop-filter: saturate(140%) blur(14px);
+      background: linear-gradient(to bottom, rgba(8,10,14,.78), rgba(8,10,14,.48));
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      transition: .35s ease;
+    }
+    .nav.scrolled{
+      background: rgba(8,10,14,.72);
+      border-bottom-color: rgba(255,255,255,.14);
+    }
+    .nav-inner{
+      height: 100%;
+      width: min(var(--max), 92vw);
+      margin: 0 auto;
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 18px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      text-decoration:none; color: var(--text);
+      font-weight:700; letter-spacing: .2px;
+      white-space: nowrap;
+    }
+    .brand-dot{
+      width: 12px; height:12px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #7fb6ff 55%, #2a5fb6);
+      box-shadow: 0 0 24px rgba(122,175,255,.8);
+      animation: pulse 2.8s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%,100%{ transform: scale(1); opacity:.9;}
+      50%{ transform: scale(1.2); opacity:1;}
+    }
+    .nav-links{
+      display:flex; gap: 12px; align-items:center; flex-wrap: wrap; justify-content: flex-end;
+    }
+    .nav-links a{
+      text-decoration:none; color: var(--muted); font-size: .95rem;
+      transition: .2s ease;
+    }
+    .nav-links a:hover{ color: var(--text); transform: translateY(-1px);}
+    .btn{
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.06);
+      color: var(--text) !important;
+      padding: 10px 16px;
+      border-radius: 999px;
+      text-decoration:none;
+      font-size: .92rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: .28s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{
+      border-color: rgba(255,255,255,.36);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
+    }
+    .btn.primary{
+      border-color: rgba(120,170,255,.55);
+      background: linear-gradient(135deg, rgba(102,163,255,.22), rgba(102,163,255,.08));
+    }
+
+    /* ===== layout ===== */
+    .container{
+      width: min(var(--max), 92vw);
+      margin: 0 auto;
+    }
+
+    section{
+      position: relative;
+      padding: clamp(64px, 10vw, 120px) 0;
+    }
+
+    /* ===== hero ===== */
+    .hero{
+      min-height: calc(100vh - var(--nav-h));
+      display:grid;
+      align-items:center;
+      padding-top: 36px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: clamp(24px, 4vw, 44px);
+      align-items:center;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: .85rem;
+      background: rgba(255,255,255,.04);
+      margin-bottom: 18px;
+      transform: translateY(12px);
+      opacity: 0;
+      animation: rise .75s .15s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    .hero h1{
+      margin:0;
+      font-size: clamp(2rem, 5vw, 4.6rem);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      max-width: 11.2ch;
+      transform: translateY(18px);
+      opacity: 0;
+      animation: rise .85s .28s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    .hero p{
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      max-width: 46ch;
+      line-height: 1.72;
+      transform: translateY(18px);
+      opacity: 0;
+      animation: rise .85s .42s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    .hero-actions{
+      display:flex;
+      gap: 12px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+      transform: translateY(18px);
+      opacity: 0;
+      animation: rise .85s .55s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    .hero-visual{
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background:
+        radial-gradient(120% 120% at 20% 10%, rgba(125,174,255,.25), transparent 45%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      min-height: 440px;
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      transform: translateY(30px) scale(.98);
+      opacity: 0;
+      animation: riseScale .95s .46s cubic-bezier(.18,.82,.2,1) forwards;
+      isolation: isolate;
+      transition: transform .25s ease;
+    }
+
+    .hero-visual::before{
+      content:"";
+      position:absolute; inset: 0;
+      background:
+        linear-gradient(transparent 96%, rgba(255,255,255,.05) 97%) 0 0/100% 28px,
+        linear-gradient(90deg, transparent 96%, rgba(255,255,255,.05) 97%) 0 0/28px 100%;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.7), transparent 75%);
+      z-index: 0;
+    }
+
+    .ring{
+      position:absolute;
+      border: 1px solid rgba(142,184,255,.45);
+      border-radius: 50%;
+      animation: rotate 16s linear infinite;
+      filter: drop-shadow(0 0 24px rgba(138,180,255,.4));
+      z-index: 1;
+    }
+    .ring.r1{ width: 280px; height:280px; top: 84px; left: 36px; }
+    .ring.r2{ width: 350px; height:350px; top: 40px; left: 74px; animation-duration: 26s; animation-direction: reverse; opacity:.75;}
+    .ring.r3{ width: 430px; height:430px; top: 8px; left: 22px; animation-duration: 34s; opacity:.45;}
+
+    @keyframes rotate{ to{ transform: rotate(360deg);} }
+
+    .metric{
+      position: absolute;
+      z-index: 2;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(8,12,19,.55);
+      backdrop-filter: blur(10px);
+      border-radius: 14px;
+      padding: 12px 14px;
+      min-width: 152px;
+      box-shadow: var(--shadow-lg);
+      animation: bob 4s ease-in-out infinite;
+    }
+    .metric small{ color: var(--muted); display:block; margin-bottom:6px; font-size: .76rem; letter-spacing:.3px;}
+    .metric strong{ font-size: 1.08rem; font-weight: 700; }
+    .metric.m1{ top: 44px; right: 26px; animation-delay: .2s;}
+    .metric.m2{ top: 164px; right: 46px; animation-delay: .6s;}
+    .metric.m3{ bottom: 34px; right: 24px; animation-delay: 1s;}
+
+    @keyframes bob{
+      0%,100%{ transform: translateY(0);}
+      50%{ transform: translateY(-10px);}
+    }
+
+    /* ===== product section ===== */
+    .section-head{
+      display:flex; align-items:end; justify-content:space-between; gap:16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .section-head h2{
+      margin:0;
+      font-size: clamp(1.6rem, 3vw, 2.7rem);
+      letter-spacing: -0.02em;
+    }
+    .section-head p{
+      margin:0; color: var(--muted); max-width: 56ch; line-height: 1.65;
+    }
+
+    .products{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .card{
+      position:relative;
+      border:1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      padding: 22px;
+      min-height: 290px;
+      overflow:hidden;
+      transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .25s ease, box-shadow .3s ease;
+      will-change: transform;
+    }
+    .card:hover{
+      transform: translateY(-8px);
+      border-color: rgba(138,180,255,.42);
+      box-shadow: 0 25px 52px rgba(0,0,0,.38);
+    }
+    .card::after{
+      content:"";
+      position:absolute;
+      inset: auto -30% -45% auto;
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      filter: blur(30px);
+      opacity: .35;
+      pointer-events:none;
+    }
+    .card.c1::after{ background: radial-gradient(circle, #5aa0ff, transparent 65%);}
+    .card.c2::after{ background: radial-gradient(circle, #9f8aff, transparent 65%);}
+    .card.c3::after{ background: radial-gradient(circle, #65d7ff, transparent 65%);}
+
+    .chip{
+      display:inline-block;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: var(--muted);
+      font-size: .74rem;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,.03);
+    }
+    .card h3{
+      margin:0 0 12px;
+      font-size: 1.25rem;
+      letter-spacing: -.01em;
+    }
+    .card p{
+      color: var(--muted);
+      line-height: 1.66;
+      margin:0 0 16px;
+    }
+    .card ul{
+      margin:0; padding-left: 18px;
+      color:#d9e0f0;
+      line-height: 1.7;
+      font-size:.94rem;
+    }
+
+    /* ===== cta ===== */
+    .cta{
+      border:1px solid var(--line);
+      border-radius: var(--radius-xl);
+      padding: clamp(24px, 4vw, 40px);
+      background:
+        radial-gradient(100% 140% at 0% 0%, rgba(126,173,255,.18), transparent 45%),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow: var(--shadow-lg);
+      display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap: wrap;
+    }
+    .cta h3{
+      margin:0;
+      font-size: clamp(1.2rem, 2.4vw, 2rem);
+      letter-spacing:-.01em;
+    }
+    .cta p{ margin:8px 0 0; color: var(--muted); }
+
+    .cta-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    /* ===== footer ===== */
+    footer{
+      padding: 30px 0 60px;
+      color: #9099ab;
+      font-size: .9rem;
+    }
+
+    /* ===== reveal animation ===== */
+    .reveal{
+      opacity: 0;
+      transform: translateY(24px) scale(.98);
+      transition: opacity .75s cubic-bezier(.2,.8,.2,1), transform .75s cubic-bezier(.2,.8,.2,1);
+    }
+    .reveal.in{
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    @keyframes rise{
+      to{ opacity:1; transform: translateY(0);}
+    }
+    @keyframes riseScale{
+      to{ opacity:1; transform: translateY(0) scale(1);}
+    }
+
+    /* 접근성: 모션 최소화 */
+    @media (prefers-reduced-motion: reduce){
+      *, *::before, *::after{
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+      .reveal{ opacity: 1; transform: none; }
+    }
+
+    /* ===== responsive ===== */
+    @media (max-width: 1024px){
+      .hero-grid{ grid-template-columns: 1fr; }
+      .hero-visual{ min-height: 390px; }
+      .products{ grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 720px){
+      .nav-links > a:not(.auth-btn){ display:none; }
+      .nav-links .auth-btn{
+        display:inline-flex;
+        padding: 9px 13px;
+        font-size: .86rem;
+      }
+      .products{ grid-template-columns: 1fr; }
+      .hero-visual{ min-height: 350px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/">
+        <span class="brand-dot"></span>
+        <span>Prizux</span>
+      </a>
+
+      <nav class="nav-links" aria-label="주요 메뉴">
+        <a href="#products">Products</a>
+        <a href="#vision">Vision</a>
+        <a href="#contact">Contact</a>
+        <a class="btn auth-btn" href="/login">로그인</a>
+        <a class="btn primary auth-btn" href="/signup">회원가입</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container" id="vision">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">Next-Gen Intelligence Platform</span>
+          <h1>Prizux, 데이터로 미래를 설계하다.</h1>
+          <p>
+            단일 대시보드에서 예측, 분석, 실시간 연산을 통합한다.
+            정확성과 속도, 확장성을 동시에 확보하는 구조로
+            제품 개발부터 운영 의사결정까지 한 번에 연결한다.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#products">제품 보기</a>
+            <a class="btn" href="#start">데모 요청</a>
+            <a class="btn" href="/login">로그인</a>
+            <a class="btn primary" href="/signup">회원가입</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="ring r1"></div>
+          <div class="ring r2"></div>
+          <div class="ring r3"></div>
+
+          <div class="metric m1">
+            <small>Inference Latency</small>
+            <strong>18ms</strong>
+          </div>
+          <div class="metric m2">
+            <small>Forecast Stability</small>
+            <strong>+27%</strong>
+          </div>
+          <div class="metric m3">
+            <small>Pipeline Uptime</small>
+            <strong>99.98%</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container reveal" id="products">
+      <div class="section-head">
+        <h2>Products</h2>
+        <p>
+          연구/실전 환경에서 검증 가능한 핵심 제품군.
+          모듈형 구조로 확장이 쉽고, 운영 리스크를 줄이는 데 최적화되어 있다.
+        </p>
+      </div>
+
+      <div class="products">
+        <article class="card c1 reveal">
+          <span class="chip">Core Engine</span>
+          <h3>Prizux Deep Core Lab</h3>
+          <p>AI 모델링과 데이터 파이프라인을 통합한 중심 엔진. 학습·검증·배포 루프를 일관되게 관리한다.</p>
+          <ul>
+            <li>다중 모델 실험 관리</li>
+            <li>실시간 특징량 처리</li>
+            <li>재현 가능한 학습 이력</li>
+          </ul>
+        </article>
+
+        <article class="card c2 reveal">
+          <span class="chip">Temporal Pattern & Sequence Memory</span>
+          <h3>Prizux Inferno</h3>
+          <p>
+            LSTM 기반 시계열 예측 모듈. 과거 구간의 패턴과 장기 의존성을 학습해
+            단기 반응성과 중기 안정성을 함께 확보한다.
+          </p>
+          <ul>
+            <li>멀티 변수 시계열 학습 (Multivariate)</li>
+            <li>다중 예측 구간 지원 (Multi-horizon)</li>
+            <li>변동성 대응 및 예측 안정성 강화</li>
+          </ul>
+        </article>
+
+        <article class="card c3 reveal">
+          <span class="chip">Engineering Optimization</span>
+          <h3>Prizux Chrono</h3>
+          <p>
+            공학 시스템의 성능·비용·안정성 목표를 동시에 만족시키는 최적화 모듈.
+            제약조건을 반영한 탐색으로 설계 변수의 최적 해를 도출한다.
+          </p>
+          <ul>
+            <li>목적함수 기반 다목적 최적화 (Multi-objective)</li>
+            <li>제약조건 반영 탐색 (Constraint-aware Search)</li>
+            <li>수렴 이력/민감도 분석 기반 의사결정 지원</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="container reveal" id="start">
+      <div class="cta">
+        <div>
+          <h3>바로 실행 가능한 메인 경험부터 시작해라.</h3>
+          <p>설계-구현-운영의 연결 비용을 줄이고, 제품 출시 속도를 올린다.</p>
+        </div>
+
+        <div class="cta-actions">
+          <a class="btn" href="/login">로그인</a>
+          <a class="btn primary" href="/signup">회원가입</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container" id="contact">
+    © 2026 Prizux. All rights reserved.
+  </footer>
+
+  <script>
+    // Sticky nav style switch
+    const nav = document.getElementById("nav");
+    const onScrollNav = () => {
+      if (window.scrollY > 10) nav.classList.add("scrolled");
+      else nav.classList.remove("scrolled");
+    };
+    onScrollNav();
+    window.addEventListener("scroll", onScrollNav, { passive: true });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add("in");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.14 });
+
+    document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
+    // Subtle parallax for hero visual
+    const heroVisual = document.querySelector(".hero-visual");
+    let rafId = null;
+
+    window.addEventListener("mousemove", (e) => {
+      if(!heroVisual) return;
+      if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      if(rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 12;
+        const y = (e.clientY / window.innerHeight - 0.5) * 10;
+        heroVisual.style.transform = `translate3d(${x * 0.5}px, ${y * 0.5}px, 0)`;
+      });
+    }, { passive: true });
+
+    window.addEventListener("mouseleave", () => {
+      if(!heroVisual) return;
+      heroVisual.style.transform = "translate3d(0,0,0)";
+    });
+  </script>
+</body>
+</html>
