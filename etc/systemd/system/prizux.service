@@ -1,0 +1,26 @@
+  GNU nano 7.2                                                  prizux.service
+[Unit]
+Description=Prizux Backend (FastAPI/Uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=svc_prizux
+Group=prizux_app
+WorkingDirectory=/home/prizux/prizux/backend
+EnvironmentFile=/home/prizux/prizux/backend/.env
+ExecStart=/home/prizux/prizux/backend/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 2
+Restart=always
+RestartSec=3
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=false
+ReadWritePaths=/home/prizux/prizux/backend /var/log/prizux /var/lib/prizux /run/prizux
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target
+
+
