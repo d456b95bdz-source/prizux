@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prizux | Sign up</title>
+  <style>
+    :root{
+      --bg:#0b0d12; --card:rgba(255,255,255,.08); --line:rgba(255,255,255,.14);
+      --text:#f5f7fb; --muted:#b9c0cf; --pri:#7fb3ff; --pri2:#5f9dff; --danger:#ff8d8d; --ok:#9df2b8;
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; display:grid; place-items:center; color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Noto Sans KR",sans-serif;
+      background:
+        radial-gradient(1000px 500px at 10% -10%,rgba(127,179,255,.25),transparent 55%),
+        radial-gradient(900px 500px at 100% 100%,rgba(140,120,255,.22),transparent 55%),
+        var(--bg);
+      padding:24px;
+    }
+    .wrap{
+      width:min(520px, 94vw);
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
+      backdrop-filter:blur(14px);
+      border-radius:var(--radius);
+      padding:26px;
+      box-shadow:0 30px 70px rgba(0,0,0,.45);
+    }
+    h1{margin:0 0 6px; font-size:1.7rem; letter-spacing:-.02em}
+    p.sub{margin:0 0 18px; color:var(--muted); line-height:1.6}
+    .row{display:grid; gap:8px; margin-bottom:12px}
+    label{font-size:.9rem; color:#d8dff0}
+    input{
+      width:100%; border:1px solid var(--line); border-radius:12px;
+      background:rgba(255,255,255,.04); color:var(--text);
+      padding:12px 13px; font-size:.95rem; outline:none;
+    }
+    input:focus{border-color:rgba(127,179,255,.8); box-shadow:0 0 0 3px rgba(127,179,255,.15)}
+    .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
+    button, a.btn{
+      border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--text);
+      padding:11px 14px; border-radius:999px; cursor:pointer; text-decoration:none; font-size:.92rem;
+    }
+    button.primary{background:linear-gradient(135deg, rgba(95,157,255,.35), rgba(95,157,255,.14)); border-color:rgba(127,179,255,.7)}
+    .msg{min-height:24px; margin-top:10px; font-size:.92rem; color:var(--muted)}
+    .err{color:var(--danger)} .ok{color:var(--ok)}
+    .otp-box{display:none; margin-top:8px; padding-top:8px; border-top:1px dashed var(--line)}
+    .footer{margin-top:14px; color:var(--muted); font-size:.9rem}
+    .footer a{color:#d5e6ff}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Create account</h1>
+    <p class="sub">이메일 인증코드(8자리 숫자) 확인 후 회원가입이 완료됩니다.</p>
+
+    <form id="signupForm" autocomplete="off">
+      <div class="row">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required />
+      </div>
+      <div class="row">
+        <label for="username">ID</label>
+        <input id="username" name="username" type="text" required minlength="4" maxlength="30" />
+      </div>
+      <div class="row">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required minlength="8" />
+      </div>
+
+      <div class="btns">
+        <button type="submit" class="primary">인증코드 보내기</button>
+        <a class="btn" href="/login">로그인</a>
+      </div>
+    </form>
+
+    <section class="otp-box" id="otpBox">
+      <div class="row">
+        <label for="otp">8-digit code</label>
+        <input id="otp" name="otp" type="text" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" />
+      </div>
+      <div class="btns">
+        <button id="verifyBtn" class="primary" type="button">인증하고 가입 완료</button>
+        <button id="resendBtn" type="button">코드 재전송</button>
+      </div>
+    </section>
+
+    <div class="msg" id="msg"></div>
+    <div class="footer">Already have an account? <a href="/login">Sign in</a></div>
+  </main>
+
+  <script>
+    const form = document.getElementById('signupForm');
+    const otpBox = document.getElementById('otpBox');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const resendBtn = document.getElementById('resendBtn');
+    const msg = document.getElementById('msg');
+
+    function setMsg(text, type='') {
+      msg.className = 'msg ' + (type || '');
+      msg.textContent = text;
+    }
+
+    async function sendSignupOtp() {
+      const payload = {
+        email: form.email.value.trim(),
+        username: form.username.value.trim(),
+        password: form.password.value
+      };
+
+      const res = await fetch('/api/v1/auth/signup/send-code', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(()=>({}));
+
+      if (res.ok) {
+        otpBox.style.display = 'block';
+        setMsg('인증코드를 이메일로 보냈습니다.', 'ok');
+      } else {
+        setMsg(data.detail || '요청 실패', 'err');
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setMsg('처리 중...');
+      await sendSignupOtp();
+    });
+
+    verifyBtn.addEventListener('click', async () => {
+      const payload = {
+        email: form.email.value.trim(),
+        username: form.username.value.trim(),
+        password: form.password.value,
+        code: document.getElementById('otp').value.trim()
+      };
+      const res = await fetch('/api/v1/auth/signup/verify', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(()=>({}));
+
+      if (res.ok) {
+        setMsg('회원가입 성공. 로그인 페이지로 이동합니다.', 'ok');
+        setTimeout(()=>location.href='/login', 900);
+      } else {
+        setMsg(data.detail || '인증 실패', 'err');
+      }
+    });
+
+    resendBtn.addEventListener('click', async () => {
+      setMsg('코드 재전송 중...');
+      await sendSignupOtp();
+    });
+  </script>
+</body>
+</html>
