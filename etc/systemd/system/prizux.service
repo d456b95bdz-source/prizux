@@ -1,26 +1,33 @@
-  GNU nano 7.2                                                  prizux.service
 [Unit]
 Description=Prizux Backend (FastAPI/Uvicorn)
-After=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
-User=svc_prizux
-Group=prizux_app
+User=prizux
+Group=prizux
 WorkingDirectory=/home/prizux/prizux/backend
 EnvironmentFile=/home/prizux/prizux/backend/.env
-ExecStart=/home/prizux/prizux/backend/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 2
-Restart=always
-RestartSec=3
 
+# ===== 포트/잔존 프로세스 정리(안전) =====
+ExecStartPre=/bin/bash -lc 'pid=$(ss -lntp | awk '"'"'$4 ~ /127\.0\.0\.1:8000$/ {match($NF,/pid=([0-9]+)/,m); if(m[1]!="") print m[1]}'"'"' | head -n1); if [ -n "$pid" ]; then kill -TERM "$pid" || true; sleep 1; kill -KILL "$pid" 2>/dev/null || true; fi'
+
+# ===== 실행 =====
+ExecStart=/home/prizux/prizux/backend/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 2
+
+Restart=always
+RestartSec=2
+TimeoutStartSec=30
+TimeoutStopSec=20
+KillMode=mixed
+
+# ===== 보안/안정성 (필요 최소) =====
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
 ProtectHome=false
-ReadWritePaths=/home/prizux/prizux/backend /var/log/prizux /var/lib/prizux /run/prizux
-UMask=0027
+ReadWritePaths=/home/prizux/prizux/backend /home/prizux/prizux/backend/SoC /run/prizux /var/lib/prizux /var/log/prizux /tmp
 
 [Install]
 WantedBy=multi-user.target
-
-
