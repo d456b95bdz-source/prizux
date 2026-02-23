@@ -1,0 +1,40 @@
+[Unit]
+Description=Prizux FastAPI (main)
+After=network-online.target mysql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=prizux
+Group=prizux
+WorkingDirectory=/home/prizux/prizux/backend
+EnvironmentFile=/home/prizux/prizux/backend/.env
+Environment=PYTHONUNBUFFERED=1
+Environment=APP_ENV=prod
+
+# 보안/안정성
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=false
+ReadWritePaths=/home/prizux/prizux/backend /home/prizux/prizux/backend/SoC /home/prizux/prizux/backend/soc/uploads
+
+# 실행
+ExecStart=/home/prizux/prizux/backend/.venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --workers 2 --proxy-headers --forwarded-allow-ips="*"
+
+# 재시작 정책
+Restart=always
+RestartSec=2
+StartLimitIntervalSec=60
+StartLimitBurst=20
+TimeoutStartSec=30
+TimeoutStopSec=20
+KillMode=mixed
+
+# 로그
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=prizux-api
+
+[Install]
+WantedBy=multi-user.target
