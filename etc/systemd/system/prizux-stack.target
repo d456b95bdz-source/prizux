@@ -1,0 +1,7 @@
+[Unit]
+Description=Prizux Stack Target (prizux + soc)
+Wants=prizux.service prizux-soc.service
+After=network-online.target
+
+[Install]
+WantedBy=multi-user.target
