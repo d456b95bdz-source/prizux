@@ -1,0 +1,31 @@
+[Unit]
+Description=Prizux SOC Worker (ingest/detect/alert)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=prizux
+Group=prizux
+SupplementaryGroups=adm
+WorkingDirectory=/home/prizux/prizux/backend
+EnvironmentFile=/home/prizux/prizux/backend/.env
+
+ExecStartPre=/usr/bin/pkill -TERM -f soc/soc_one.py
+ExecStartPre=/bin/sleep 1
+ExecStart=/home/prizux/prizux/backend/.venv/bin/python /home/prizux/prizux/backend/soc/soc_one.py
+
+Restart=always
+RestartSec=2
+TimeoutStartSec=30
+TimeoutStopSec=20
+KillMode=mixed
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=false
+ReadWritePaths=/home/prizux/prizux/backend /home/prizux/prizux/backend/SoC /var/log/nginx /var/log /tmp
+
+[Install]
+WantedBy=multi-user.target
